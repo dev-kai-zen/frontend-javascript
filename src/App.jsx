@@ -1,16 +1,30 @@
-import {Button} from '@mui/material'
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { BrowserRouter } from "react-router-dom";
 
-function App() {
+import { AuthBootstrap } from "./modules/auth/AuthBootstrap";
+import AppRoutes from "./shared/routes/AppRoutes";
+import { getEnv } from "./shared/config/env";
+import { AppThemeProvider } from "./shared/theme/AppThemeProvider";
 
+export default function App() {
+  const { googleClientId } = getEnv();
+  const routes = (
+    <AuthBootstrap>
+      <AppRoutes />
+    </AuthBootstrap>
+  );
 
   return (
-    <>
-    
-      <Button variant="contained" color="primary">
-        Click me
-      </Button>
-    </>
-  )
+    <BrowserRouter>
+      <AppThemeProvider>
+        {googleClientId ? (
+          <GoogleOAuthProvider clientId={googleClientId}>
+            {routes}
+          </GoogleOAuthProvider>
+        ) : (
+          routes
+        )}
+      </AppThemeProvider>
+    </BrowserRouter>
+  );
 }
-
-export default App

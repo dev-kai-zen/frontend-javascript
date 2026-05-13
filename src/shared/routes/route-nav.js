@@ -1,0 +1,65 @@
+/**
+ * Sidebar + path helpers from **`routesConfig.js`**. Nested tree → flat router
+ * leaves is implemented in **`AppRoutes.jsx`** (`navTreeToLayoutRouteLeaves`).
+ */
+
+import { isRouteNavGroup } from "./route-nav-types";
+import { ROUTES_NAV_TREE } from "./routesConfig";
+
+export { isRouteNavGroup, isRouteNavLeaf } from "./route-nav-types";
+
+/** Drops `hidden` leaves/groups; removes sidebar sections whose children vanished. */
+export function filterSidebarNav(items) {
+  const out = [];
+
+  for (const item of items) {
+    if (isRouteNavGroup(item)) {
+      if (item.hidden) continue;
+      const children = filterSidebarNav(item.children);
+      if (children.length === 0) continue;
+      out.push({ ...item, children });
+    } else if (!item.hidden) {
+      out.push(item);
+    }
+  }
+
+  return out;
+}
+
+/** Precomputed tree for `<AppSidebar />` (`hidden` removed; permissions filtered at runtime). */
+export const ROUTES_SIDEBAR_TREE = filterSidebarNav(ROUTES_NAV_TREE);
+
+export function normalizePathname(pathname) {
+  if (pathname.length > 1 && pathname.endsWith("/")) {
+    return pathname.slice(0, -1);
+  }
+  return pathname;
+}
+
+export function itemMatchesPath(item, pathname) {
+  const p = normalizePathname(pathname);
+  if (!isRouteNavGroup(item)) {
+    const base = normalizePathname(item.path);
+    return p === base || p.startsWith(`${base}/`);
+  }
+  return item.children.some((child) => itemMatchesPath(child, p));
+}
+
+/** Section keys kept open when the browser path reaches a descendant link. */
+export function getSidebarOpenKeysForPath(items, pathname) {
+  const out = {};
+
+  const walk = (list) => {
+    for (const item of list) {
+      if (!isRouteNavGroup(item)) continue;
+      const hit = item.children.some((c) => itemMatchesPath(c, pathname));
+      if (hit) {
+        out[item.key] = true;
+        walk(item.children);
+      }
+    }
+  };
+
+  walk(items);
+  return out;
+}
