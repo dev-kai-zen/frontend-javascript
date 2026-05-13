@@ -1,24 +1,30 @@
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import HomeIcon from "@mui/icons-material/Home";
+import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+import CategoryIcon from "@mui/icons-material/Category";
+import HistoryIcon from "@mui/icons-material/History";
+import ListAltIcon from "@mui/icons-material/ListAlt";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import TableChartIcon from "@mui/icons-material/TableChart";
+import VpnKeyIcon from "@mui/icons-material/VpnKey";
+import PersonIcon from "@mui/icons-material/Person";
+import SettingsIcon from "@mui/icons-material/Settings";
 
+import AuditLogsPage from "../../modules/audit-logs/AuditLogsPage";
+import HiddenRoutePage from "../../modules/hidden-route/HiddenRoutePage";
 import HomePage from "../../modules/home/HomePage";
+import RbacCategoriesPage from "../../modules/rbac/categories/RbacCategoriesPage";
+import RbacPermissionsPage from "../../modules/rbac/permissions/RbacPermissionsPage";
+import RbacRoleAssignmentsHistoryPage from "../../modules/rbac/role-assignments-history/RbacRoleAssignmentsHistoryPage";
+import RbacRolePermissionsPage from "../../modules/rbac/role-permissions/RbacRolePermissionsPage";
+import RbacRolesPage from "../../modules/rbac/roles/RbacRolesPage";
+import SettingsPage from "../../modules/settings/SettingsPage";
+import UserLogsPage from "../../modules/user-logs/UserLogsPage";
+import UserManagementPage from "../../modules/user-management/UserManagementPage";
 
 /**
- * Declarative nav + URL tree: paths, labels, icons, grouping, flags.
- *
- * How to extend
- * -------------
- * 1. **Leaf route** — one URL and one page component:
- *    `{ kind: "leaf", key: "unique-id", path: "/path", Page: MyPage, label: "Label", Icon: MyIcon }`
- * 2. **Group** — sidebar folder with nested `children` (no URL of its own):
- *    `{ kind: "group", key: "section", label: "Section", Icon: SectionIcon, children: [ …leaves or nested groups ] }`
- * 3. **Hidden** — register the route but hide from the drawer: `hidden: true` on a leaf or group.
- * 4. **Permissions** (optional, same shape as backend permission codes):
- *    - `permission: "code"` — single required code (enforced in TS via typings; runtime checks `permissionAll` / `permissionAny` in `route-permission.js`)
- *    - `permissionAny: ["a","b"]` — user needs one of these
- *    - `permissionAll: ["a","b"]` — user needs all of these
- *
- * `<AppRoutes />` turns every **leaf** into a `<Route />`. `route-nav.js` derives the sidebar
- * from the same tree (`ROUTES_SIDEBAR_TREE` drops `hidden` entries only; permissions filter at runtime).
+ * Declarative nav + URL tree only: paths, labels, icons, grouping, flags.
+ * `<AppRoutes />` turns leaves into `<Route />` elements and mounts each `Page` after auth/permission checks.
  */
 export const ROUTES_NAV_TREE = [
   {
@@ -29,8 +35,6 @@ export const ROUTES_NAV_TREE = [
     label: "Home",
     Icon: HomeIcon,
   },
-
-  /* Example — uncomment when you add `SettingsPage`:
   {
     kind: "leaf",
     key: "settings",
@@ -52,9 +56,78 @@ export const ROUTES_NAV_TREE = [
         Page: UserManagementPage,
         label: "User management",
         Icon: PersonIcon,
-        permissionAny: ["users.read"],
+      },
+      {
+        kind: "leaf",
+        key: "audit-logs",
+        path: "/admin/audit-logs",
+        Page: AuditLogsPage,
+        label: "Audit logs",
+        Icon: HistoryIcon,
+      },
+      {
+        kind: "leaf",
+        key: "user-logs",
+        path: "/admin/user-logs",
+        Page: UserLogsPage,
+        label: "User logs",
+        Icon: ListAltIcon,
+      },
+      {
+        kind: "group",
+        key: "rbac",
+        label: "Role Based Access Control",
+        Icon: AdminPanelSettingsIcon,
+        children: [
+          {
+            kind: "leaf",
+            key: "rbac-categories",
+            path: "/admin/rbac/categories",
+            Page: RbacCategoriesPage,
+            Icon: CategoryIcon,
+            label: "Categories",
+          },
+          {
+            kind: "leaf",
+            key: "rbac-permissions",
+            path: "/admin/rbac/permissions",
+            Page: RbacPermissionsPage,
+            Icon: VpnKeyIcon,
+            label: "Permissions",
+          },
+          {
+            kind: "leaf",
+            key: "rbac-roles",
+            path: "/admin/rbac/roles",
+            Page: RbacRolesPage,
+            Icon: ManageAccountsIcon,
+            label: "Roles",
+          },
+          {
+            kind: "leaf",
+            key: "rbac-role-permissions",
+            path: "/admin/rbac/role-permissions",
+            Page: RbacRolePermissionsPage,
+            Icon: TableChartIcon,
+            label: "Role permission matrix",
+          },
+          {
+            kind: "leaf",
+            key: "rbac-role-assignments-history",
+            path: "/admin/rbac/role-assignments-history",
+            Page: RbacRoleAssignmentsHistoryPage,
+            Icon: AssignmentIndIcon,
+            label: "Role assignments history",
+          },
+        ],
+      },
+      {
+        kind: "leaf",
+        key: "hidden-route",
+        path: "/hidden-route",
+        Page: HiddenRoutePage,
+        hidden: true,
       },
     ],
   },
-  */
 ];
